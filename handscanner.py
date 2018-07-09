@@ -144,7 +144,7 @@ def run_process(camera_config):
         while process_running:
             if photo_button.is_pressed:
                 print("Taken photo number {}".format(photo_number))
-                take_picture(uid, photo_number)
+                take_picture(camera, uid, photo_number)
                 photo_number += 1
             # Return button 2 to pre-pressed settings
             # photo_button._active_event.clear()
@@ -161,4 +161,4 @@ def run_process(camera_config):
 if __name__ == "__main__":
 
     camera_config = setup_camera()
-    final_uid = run_process(camera_config)
+    run_process(camera_config)
