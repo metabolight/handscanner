@@ -30,9 +30,7 @@ def merge(UID, debug=False):
                        ("all files", "*.*")))
         if len(root.filenames) <= 6:
             break
-        else:
-            root = Tk()
-
+        
     if debug:
         print(root.filenames)
     images = list(map(Image.open, root.filenames))
@@ -52,6 +50,7 @@ def merge(UID, debug=False):
         if debug:
             print("PHOTO {}: \n\tX_off:\t{}\n\tY_off:\t{}".format(
                 ix, x_offset, y_offset))
+        print("Merging photographs.")
         foreground.paste(im, (x_offset, y_offset))
         x_offset += im.size[0]
         if (ix + 1) % 3 == 0:
@@ -61,3 +60,6 @@ def merge(UID, debug=False):
     background.paste(foreground, (40, 40))
     background.save(os.path.join(CURRENT_DIR, '{}_combined.png'.format(UID)))
     background.show()
+    
+    # Close the dialog window after finishing
+    root.destroy()

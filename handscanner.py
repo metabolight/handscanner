@@ -14,18 +14,27 @@ from os import path
 import os
 from datetime import datetime
 from photo_merge import merge
+import tkinter 
+
+root = tkinter.Tk()
+root.withdraw()
+
+
 
 
 ###  Define state variables ###
+
+screen_size = (root.winfo_screenwidth(), root.winfo_screenheight())
+root.destroy()
 original_resolution = (1848, 2464)
 """tuple: original resolution of camera."""
-RATIO = original_resolution[1] / original_resolution[0]
+RATIO = original_resolution[0] / original_resolution[1]
 """float: aspect ratio of the camera."""
 # Initial parameters and variables
-SIZE = 480
-"""int: width of camera image."""
-RESOLUTION = (SIZE, int(SIZE * RATIO))
-"""tuple: scaled rsoluation of camera."""
+SIZE = screen_size[1] # 640
+"""int: height of preview image."""
+RESOLUTION = (int(SIZE * RATIO), SIZE)
+"""tuple: scaled resolution of preview."""
 TODAY = datetime.today().strftime("%d-%m-%y")
 """str: today's date for use in naming directories."""
 CURRENT_DIR = path.abspath(path.dirname(__file__))
@@ -46,9 +55,8 @@ def get_uid(current_dirs):
         current_uid (int): Current user ID
     """
 
-    if len(current_dirs) == 0:
-        current_uid = 1
-    else:
+    current_uid = 1
+    if len(current_dirs) != 0:
         max_dir_num = max([int(d) for d in current_dirs])
         empty_dir_found = False
         for d in current_dirs:
@@ -81,7 +89,11 @@ def setup_camera():
 
     camera = PiCamera()
     camera.preview_fullscreen = False
-    camera.preview_window = (5, 35, SIZE, int(SIZE * RATIO))
+    prev_width = int(SIZE * RATIO)
+    horizontal_offset = int((screen_size[0] - prev_width) / 4)
+    vertical_offset = int(screen_size[1]/20)
+    camera.preview_window = (horizontal_offset, vertical_offset,
+                             int(SIZE * RATIO), SIZE)
     camera.resolution = RESOLUTION
     camera.rotation = 90
 
