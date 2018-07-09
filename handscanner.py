@@ -15,6 +15,7 @@ import os
 from datetime import datetime
 from photo_merge import merge
 import tkinter 
+from tkinter import filedialog
 
 root = tkinter.Tk()
 root.withdraw()
@@ -37,20 +38,21 @@ RESOLUTION = (int(SIZE * RATIO), SIZE)
 """tuple: scaled resolution of preview."""
 TODAY = datetime.today().strftime("%d-%m-%y")
 """str: today's date for use in naming directories."""
-CURRENT_DIR = path.abspath(path.dirname(__file__))
-"""str: directory code is stored in."""
-BASE_DIR = path.join(CURRENT_DIR, "photos", TODAY)
+# CURRENT_DIR = path.abspath(path.dirname(__file__))
+BASE_DIR = filedialog.askdirectory(initialdir='/media/pi')
+"""str:  base directory to put photos."""
+PHOTO_DIR = path.join(BASE_DIR, "photos", TODAY)
 """str: directory to store images in."""
-dir_util.mkpath(BASE_DIR)
-print("Base directory set to {}".format(BASE_DIR))
-current_dirs = os.listdir(BASE_DIR)
-"""list: List of current directories inside `BASE_DIR`."""
+dir_util.mkpath(PHOTO_DIR)
+print("Base directory set to {}".format(PHOTO_DIR))
+current_dirs = os.listdir(PHOTO_DIR)
+"""list: List of current directories inside `PHOTO_DIR`."""
 
 
 def get_uid(current_dirs):
     """ Get current user ID.
     Args:
-        current_dirs (list of str): List of directories currently in BASE_DIR.
+        current_dirs (list of str): List of directories currently in PHOTO_DIR.
     Returns:
         current_uid (int): Current user ID
     """
@@ -60,7 +62,7 @@ def get_uid(current_dirs):
         max_dir_num = max([int(d) for d in current_dirs])
         empty_dir_found = False
         for d in current_dirs:
-            if len(os.listdir(path.join(BASE_DIR, d))) == 0:
+            if len(os.listdir(path.join(PHOTO_DIR, d))) == 0:
                 empty_dir_found = True
                 if int(d) > current_uid:
                     current_uid = int(d)
@@ -82,7 +84,7 @@ def setup_camera():
             photo_button (Object): configured photo controller button.
     """
     # Make the base directory
-    dir_util.mkpath(BASE_DIR)
+    # dir_util.mkpath(PHOTO_DIR)
     # Define physical input variables
     preview_button = Button(14)
     photo_button = Button(15)
@@ -124,7 +126,7 @@ def take_picture(camera, user_id, photo_number):
         photo_number (int): Number for current user's photo.
     """
 
-    camera.capture(path.join(BASE_DIR, user_id, "%.2d.jpg" % (photo_number)))
+    camera.capture(path.join(PHOTO_DIR, user_id, "%.2d.jpg" % (photo_number)))
     return True
 
 
@@ -145,7 +147,7 @@ def run_process(camera_config):
         process_running = True
         photo_number = 1
         uid = str(USER_ID).zfill(5)
-        dir_util.mkpath(path.join(BASE_DIR, uid))
+        dir_util.mkpath(path.join(PHOTO_DIR, uid))
         # Return button 1 to pre-pressed settings
         preview_button._active_event.clear()
         print("PUSH BUTTON")
@@ -163,7 +165,7 @@ def run_process(camera_config):
             elif preview_button.is_pressed:
                 print("Stopping process")
                 camera.stop_preview()
-                merge(uid, debug=True)
+                merge(uid, media_dir=PHOTO_DIR, debug=True)
                 USER_ID += 1
                 break
             else:

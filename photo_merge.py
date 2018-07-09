@@ -7,20 +7,24 @@ import pathlib
 from datetime import datetime
 
 
-def merge(UID, debug=False):
+def merge(UID, media_dir=None, debug=False):
     """Merge photos together into one single image, using template.
 
     Args:
         UID (str): User ID to makephoto for.
         debug (boolean, optional): Whether to print debug info to console.
     """
-    MEDIA_DIR = os.path.abspath(os.path.basename(__file__))
+    if media_dir:
+        MEDIA_DIR = media_dir
+    else:
+        MEDIA_DIR = os.path.abspath(os.path.basename(__file__))
     if debug:
         print("MEDIA DIR: \t{}".format(MEDIA_DIR))
     CURRENT_DIR = os.path.join(MEDIA_DIR, datetime.now().strftime("%Y/%m/%d"))
     if debug:
         print("Writing to: \t{}".format(CURRENT_DIR))
     root = Tk()
+    root.withdraw()
 
     while True:
         root.filenames = filedialog.askopenfilenames(
