@@ -57,17 +57,24 @@ def get_uid(current_dirs):
         current_uid (int): Current user ID
     """
 
-    current_uid = 1
+    # current_uid = 1
     if len(current_dirs) != 0:
         max_dir_num = max([int(d) for d in current_dirs])
-        empty_dir_found = False
+        empty_dirs_idx = 0
+        used_dirs_idx = 0
         for d in current_dirs:
             if len(os.listdir(path.join(PHOTO_DIR, d))) == 0:
-                empty_dir_found = True
-                if int(d) > current_uid:
-                    current_uid = int(d)
-            elif not empty_dir_found:
-                current_uid = max_dir_num + 1
+                empty_dir_idx = int(d)
+            else:
+                used_dirs_idx = int(d)
+        if empty_dirs_idx < used_dirs_idx:
+            current_uid = max_dir_num + 1
+        elif empty_dirs_idx > used_dirs_idx:
+            current_uid = empty_dirs_idx
+    else:
+        print("No directories' found.")
+        current_uid = 1  
+                
     return current_uid
 
 

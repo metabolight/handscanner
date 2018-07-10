@@ -6,6 +6,8 @@ from PIL import Image
 import pathlib
 from datetime import datetime
 
+BASEWIDTH = 480
+"""Widthv of image for template."""
 
 def merge(UID, media_dir=None, debug=False):
     """Merge photos together into one single image, using template.
@@ -39,9 +41,11 @@ def merge(UID, media_dir=None, debug=False):
         print(root.filenames)
     images = list(map(Image.open, root.filenames))
     widths, heights = zip(*(i.size for i in list(images)))
-
-    total_width = max(widths) * 3
-    max_height = 2 * max(heights)
+    
+    wpercent = (BASEWIDTH / float(max(widths)))
+    hsize = int((float(max(heights)) *  float(wpercent)))
+    total_width = BASEWIDTH * 3
+    max_height = 2 * hsize
 
     foreground = Image.new('RGB', (total_width, max_height))
     background = Image.open('handscannerTemplate.png')
@@ -54,6 +58,8 @@ def merge(UID, media_dir=None, debug=False):
         if debug:
             print("PHOTO {}: \n\tX_off:\t{}\n\tY_off:\t{}".format(
                 ix, x_offset, y_offset))
+        
+        im = im.resize((BASEWIDTH, hsize), Image.ANTIALIAS)
         print("Merging photographs.")
         foreground.paste(im, (x_offset, y_offset))
         x_offset += im.size[0]
